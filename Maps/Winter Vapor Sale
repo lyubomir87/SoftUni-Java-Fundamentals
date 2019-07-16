@@ -1,0 +1,55 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class vaporWinter {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String[] input = scanner.nextLine().split(", ");
+        Map<String, Double> gamesPrices = new HashMap<>();
+        Map<String, String> gamesWithDlc = new HashMap<>();
+
+        for (String s : input) {
+
+            if (s.contains("-")) {
+                String[] info = s.split("-");
+                String gameName = info[0];
+                double price = Double.parseDouble(info[1]);
+                gamesPrices.put(gameName, price);
+            } else if (s.contains(":")) {
+                String[] dlc = s.split(":");
+                String gameName = dlc[0];
+                String dlcName = dlc[1];
+                if (gamesPrices.containsKey(gameName)) {
+                    gamesWithDlc.put(gameName, dlcName);
+                    gamesPrices.put(gameName, gamesPrices.get(gameName) * 1.2);
+                }
+            }
+
+        }
+        for (Map.Entry<String, Double> entry : gamesPrices.entrySet()) {
+            if (gamesWithDlc.containsKey(entry.getKey())) {
+                gamesPrices.put(entry.getKey(), entry.getValue() * 0.5);
+            } else {
+                gamesPrices.put(entry.getKey(), entry.getValue() * 0.8);
+            }
+
+        }
+        gamesPrices.entrySet().stream().sorted((a, b) -> a.getValue().compareTo(b.getValue()))
+                .forEach(e -> {
+                    if (gamesWithDlc.containsKey(e.getKey())) {
+                        System.out.println(String.format("%s - %s - %.2f", e.getKey(), gamesWithDlc.get(e.getKey()), e.getValue()));
+                    }
+                });
+
+        gamesPrices.entrySet().stream().sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+                .forEach(e -> {
+                    if (!gamesWithDlc.containsKey(e.getKey())) {
+                        System.out.println(String.format("%s - %.2f", e.getKey(), e.getValue()));
+                    }
+                });
+
+
+    }
+}
